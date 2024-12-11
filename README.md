@@ -6,12 +6,12 @@ The current process involves the following steps:
 1. A NodeJS script receives the input array via CLI argument.
 2. A docker container containing emacs is built.
 3. A container is launched for each element in the array.
-	1. Emacs is launched and a customized .emacs file is executed.
+	1. Emacs is started with a customized .emacs file.
 	2. eww is used to load https://randomtextgenerator.com
 	3. Random characters are selected from the eww buffer and each character is mapped to a move (up, down, left, right).
-	4. Emacs tetris is launched and the moves are fed to the game with a random delay.
+	4. Tetris is started (in emacs) and the moves are fed to the game with a random delay.
 	5. When tetris halts emacs is stopped (along with the container) and the tetris score is read from a host file that was bound to the container.
-4. When all tetris scores are obtained the input array is sorted with the scores.
+4. When all tetris scores are obtained the input array is sorted using the scores.
 
 # Installation
 ## Prerequisites
