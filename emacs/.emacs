@@ -9,7 +9,7 @@
 			(while score-buffer
 				(dolist (move moves)
 					(execute-kbd-macro (kbd move))
-					(sit-for (/ (+ .1 (random 10)) 10))
+					(sit-for (/ (+ .1 (random 5)) 10))
 					(when (get-buffer "tetris-scores")
 						(if kill-emacs-when-tetris-bot-finishes
 								(kill-emacs)
@@ -18,18 +18,19 @@
 (defun build-tetris-moves (buffer)
 	(let ((moves '()))
 		(with-current-buffer buffer
-			(dotimes (i 200)
-		 		(push
-				 (char-code-to-tetris-move
-					(or (char-after (+ 350 (random 2200))) 32))
-				 moves))
+			(dotimes (i 400)
+				(if (= 0 (mod i 20))
+						(push "SPC" moves)
+		 			(push
+					 (char-code-to-tetris-move
+						(or (char-after (+ 350 (random 2200))) 32))
+					 moves)))
 			)
 		moves))
 
 (defun char-code-to-tetris-move (char)
 	(let ((mod-value (mod char 7)))
 		(cond
-		 ((= char 32) "SPC")
 		 ((= mod-value 0) "<down>")
 		 ((< mod-value 3) "<up>")
 		 ((< mod-value 5) "<left>")
