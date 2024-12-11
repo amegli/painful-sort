@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+const Docker = require("dockerode");
+const blessed = require("blessed");
+const { program } = require("commander");
+const DockerLib = require("./docker.js");
+
+program
+	.description("Sort an array while you make coffee")
+	.option("-i --input <input>", "Input array - '[1,2,3]'")
+	.parse();
+
+const options = program.opts();
+const inputArray = JSON.parse(options.input);
+
+const docker = new Docker();
+
+DockerLib.cleanOutputDir();
+
+DockerLib.build(docker).then(() => {
+	const screen = blessed.screen({
+		smartCSR: true,
+		title: "Containers",
+	});
+
+	const scoresByItem = inputArray.reduce(
+		(output, item) => ({ ...output, [item]: 0 }),
+		{},
+	);
+
+	const outputPromises = inputArray.map((item, index) => {
+		return DockerLib.run(docker, screen, index, inputArray.length).then(
+			(score) => {
+				scoresByItem[item] = score;
+			},
+		);
+	});
+
+	Promise.all(outputPromises).finally(() => {
+		screen.destroy();
+		console.clear();
+		inputArray.sort((a, b) => scoresByItem[a] - scoresByItem[b]);
+		console.log(inputArray);
+	});
+});
