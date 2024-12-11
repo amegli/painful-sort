@@ -1,5 +1,4 @@
 (setq tetris-score-file "/tmp/tetris-scores")
-(setq kill-emacs-when-tetris-bot-finishes t)
 
 (defun tetris-bot (moves)
 	(tetris)
@@ -11,17 +10,17 @@
 					(execute-kbd-macro (kbd move))
 					(sit-for (/ (+ .1 (random 5)) 10))
 					(when (get-buffer "tetris-scores")
-						(if kill-emacs-when-tetris-bot-finishes
+						(if (not window-system)
 								(kill-emacs)
 							(message "%s" "Tetris bot complete"))))))))
 
 (defun build-tetris-moves (buffer)
 	(let ((moves '()))
 		(with-current-buffer buffer
-			(dotimes (i 400)
-				(if (= 0 (mod i 20))
+			(dotimes (i 100)
+				(if (= 0 (mod i 10))
 						(push "SPC" moves)
-		 			(push
+					(push
 					 (char-code-to-tetris-move
 						(or (char-after (+ 350 (random 2200))) 32))
 					 moves)))
@@ -29,12 +28,12 @@
 		moves))
 
 (defun char-code-to-tetris-move (char)
-	(let ((mod-value (mod char 7)))
+	(let ((mod-value (mod char 8)))
 		(cond
 		 ((= mod-value 0) "<down>")
 		 ((< mod-value 3) "<up>")
-		 ((< mod-value 5) "<left>")
-		 (t "<right>"))))
+		 ((< mod-value 6) "<right>")
+		 (t "<left>"))))
 
 (defun run-tetris-bot ()
 	"Generate random moves and play tetris with them"
