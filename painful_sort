@@ -29,11 +29,9 @@ DockerLib.build(docker).then(() => {
 	);
 
 	const outputPromises = inputArray.map((item, index) => {
-		return DockerLib.run(docker, screen, index, inputArray.length).then(
-			(score) => {
-				scoresByItem[item] = score;
-			},
-		);
+		return DockerLib.run(docker, screen, index).then((score) => {
+			scoresByItem[item] = score;
+		});
 	});
 
 	Promise.all(outputPromises).finally(() => {

@@ -37,17 +37,18 @@ const build = async (docker) => {
 
 /**
  * @param {Docker} docker
+ * @param {blessed.screen} screen
+ * @param {Integer} containerNumber
  * @returns {Promise}
  */
-const run = async (docker, screen, containerNumber, itemCount) => {
+const run = async (docker, screen, containerNumber) => {
 	const outputFilePath = path.resolve(`./output/${randomUUID()}.txt`);
 	fs.closeSync(fs.openSync(outputFilePath, "a"));
 
 	const containerStream = new PassThrough();
 
 	const boxWidth = Math.floor(100 / DISPLAY_COLUMNS);
-	const rowCount = Math.ceil(itemCount / DISPLAY_COLUMNS);
-	const boxHeight = Math.floor(100 / rowCount);
+	const boxHeight = Math.floor(boxWidth * 2);
 	const rowNumber = Math.floor(containerNumber / DISPLAY_COLUMNS);
 	const columnNumber = containerNumber % DISPLAY_COLUMNS;
 
@@ -58,6 +59,7 @@ const run = async (docker, screen, containerNumber, itemCount) => {
 		height: `${boxHeight}%`,
 		content: "Starting emacs...\n",
 		scrollable: true,
+		fullUnicode: true,
 		border: {
 			type: "line",
 		},
