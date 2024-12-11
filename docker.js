@@ -11,7 +11,9 @@ const DISPLAY_COLUMNS = 5;
  */
 const cleanOutputDir = () => {
 	const files = fs.readdirSync("./output");
-	files.forEach((fileName) => fs.unlinkSync(path.join("./output", fileName)));
+	files
+		.filter((fileName) => fileName !== ".gitkeep")
+		.forEach((fileName) => fs.unlinkSync(path.join("./output", fileName)));
 };
 
 /**
