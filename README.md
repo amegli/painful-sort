@@ -31,6 +31,8 @@ Don't.
 But if you must:
 `./painful_sort -i '["ItemA", "ItemB", "ItemC"]'`
 
+The first run of the application will build the docker container, so for the purposes of performance monitoring this run should be ignored.
+
 # Issues/Future plans
 * Emacs output doesn't display properly.  The command line output (using the https://github.com/chjj/blessed) is a stream of the docker logs and is lacking something.
 * Larger arrays could be better handled by chunking and running a set of containers on a chunk at a time.
