@@ -46,6 +46,7 @@
 															 (sit-for 3)
 															 (message "Moves: %s" moves)
 															 (sit-for 5)
+															 (switch-to-buffer "*scratch*")
 															 (tetris-bot moves))
 													 (message "%s" "Random text buffer not found"))
 												 (remove-hook 'eww-after-render-hook run-tetris-fn)
