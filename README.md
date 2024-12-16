@@ -17,9 +17,11 @@ The current process involves the following steps:
 ## Prerequisites
 * NodeJS 18
 * Docker
+* Python 3
 ## Steps
 * Clone this repository and `cd` into it
 * Run `npm install`
+	* If node-gyp issues are encountered, try https://github.com/nodejs/node/issues/55023
 * Make sure docker is running
 * If necessary, run `chmod +x painful_sort`
 * Confim the app can execute by running `./painful_sort --help`
@@ -34,6 +36,6 @@ But if you must:
 The first run of the application will build the docker container, so for the purposes of performance monitoring this run should be ignored.
 
 # Issues/Future plans
-* Emacs output doesn't display properly.  The command line output (using the https://github.com/chjj/blessed) is a stream of the docker logs and is lacking something.
+* Emacs output doesn't display properly.  The command line output (using https://github.com/chjj/blessed) is a stream of the docker logs and is lacking something.
 * Larger arrays could be better handled by chunking and running a set of containers on a chunk at a time.
 * Tetris moves could be displayed better, probably by using a host file bound to the container.  This would also allow the moves to be examined afterwards.  The emacs script does display the moves in the "Messages" buffer but this isn't very helpful.

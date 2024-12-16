@@ -54,14 +54,14 @@ const run = async (docker, screen, containerNumber) => {
 	const rowNumber = Math.floor(containerNumber / DISPLAY_COLUMNS);
 	const columnNumber = containerNumber % DISPLAY_COLUMNS;
 
-	const logBox = blessed.box({
+	const logBox = blessed.terminal({
+		parent: screen,
 		left: `${columnNumber * boxWidth}%`,
 		width: `${boxWidth}%`,
 		top: `${boxHeight * rowNumber}%`,
 		height: `${boxHeight}%`,
 		content: "Starting emacs...\n",
-		scrollable: true,
-		fullUnicode: true,
+		scrollable: false,
 		border: {
 			type: "line",
 		},
@@ -74,12 +74,10 @@ const run = async (docker, screen, containerNumber) => {
 		},
 	});
 
-	screen.append(logBox);
 	screen.render();
 
 	containerStream.on("data", (chunk) => {
-		logBox.setContent(logBox.getContent() + chunk.toString());
-		logBox.scrollTo(logBox.getScrollHeight());
+		logBox.write(chunk.toString());
 		screen.render();
 	});
 
@@ -96,7 +94,7 @@ const run = async (docker, screen, containerNumber) => {
 	);
 
 	const score = extractScore(fs.readFileSync(outputFilePath));
-	logBox.setContent(`Tetris complete.  Score: ${score}`);
+	logBox.write(`Tetris complete.  Score: ${score}`);
 	return score;
 };
 
