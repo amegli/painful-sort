@@ -29,12 +29,17 @@ const build = async (docker) => {
 		},
 		{ t: "emacs_container:latest" },
 	);
-	const result = await new Promise((resolve, reject) => {
+	const results = await new Promise((resolve, reject) => {
 		docker.modem.followProgress(buildStream, (err, result) =>
 			err ? reject(err) : resolve(result),
 		);
 	});
-	console.log(result);
+	console.log(
+		results
+			.map((result) => result.stream)
+			.filter((result) => result !== "\n")
+			.join("\n"),
+	);
 };
 
 /**
