@@ -15,29 +15,28 @@ const inputArray = JSON.parse(options.input);
 
 const docker = new Docker();
 
-DockerLib.cleanOutputDir();
-
 DockerLib.build(docker).then(() => {
 	const screen = blessed.screen({
 		smartCSR: true,
 		title: "Containers",
 	});
 
-	const scoresByItem = inputArray.reduce(
-		(output, item) => ({ ...output, [item]: 0 }),
-		{},
-	);
+	const itemsWithScores = inputArray.reduce((output, value) => {
+		output.push({ value: value, score: 0 });
+		return output;
+	}, []);
 
-	const outputPromises = inputArray.map((item, index) => {
+	const outputPromises = itemsWithScores.map((itemWithScore, index) => {
 		return DockerLib.run(docker, screen, index).then((score) => {
-			scoresByItem[item] = score;
+			itemWithScore.score = score;
 		});
 	});
 
 	Promise.all(outputPromises).finally(() => {
+		DockerLib.cleanOutputDir();
 		screen.destroy();
 		console.clear();
-		inputArray.sort((a, b) => scoresByItem[a] - scoresByItem[b]);
-		console.log(inputArray);
+		itemsWithScores.sort((a, b) => b.score - a.score);
+		console.log(itemsWithScores.map((item) => item.value));
 	});
 });
