@@ -4,7 +4,7 @@ const { randomUUID } = require("crypto");
 const { PassThrough } = require("stream");
 const blessed = require("blessed");
 
-const DISPLAY_COLUMNS = 5;
+const BOX_WIDTH = 45;
 
 /**
  * @returns {void}
@@ -54,25 +54,21 @@ const run = async (docker, screen, containerNumber) => {
 
 	const containerStream = new PassThrough();
 
-	const boxWidth = Math.floor(100 / DISPLAY_COLUMNS);
-	const boxHeight = Math.floor(boxWidth * 2);
-	const rowNumber = Math.floor(containerNumber / DISPLAY_COLUMNS);
-	const columnNumber = containerNumber % DISPLAY_COLUMNS;
+	const columnsPerRow = Math.floor(screen.width / BOX_WIDTH);
+	const boxHeight = Math.floor(BOX_WIDTH * 0.6);
+	const rowNumber = Math.floor(containerNumber / columnsPerRow);
+	const columnNumber = containerNumber % columnsPerRow;
 
-	const logBox = blessed.terminal({
+	const terminal = blessed.terminal({
 		parent: screen,
-		left: `${columnNumber * boxWidth}%`,
-		width: `${boxWidth}%`,
-		top: `${boxHeight * rowNumber}%`,
-		height: `${boxHeight}%`,
+		width: BOX_WIDTH,
+		height: boxHeight,
+		top: boxHeight * rowNumber,
+		left: columnNumber * BOX_WIDTH,
 		content: "Starting emacs...\n",
 		scrollable: false,
-		border: {
-			type: "line",
-		},
+		border: "line",
 		style: {
-			fg: "white",
-			bg: "grey",
 			border: {
 				fg: "green",
 			},
@@ -82,7 +78,7 @@ const run = async (docker, screen, containerNumber) => {
 	screen.render();
 
 	containerStream.on("data", (chunk) => {
-		logBox.write(chunk.toString());
+		terminal.write(chunk.toString());
 		screen.render();
 	});
 
@@ -99,7 +95,7 @@ const run = async (docker, screen, containerNumber) => {
 	);
 
 	const score = extractScore(fs.readFileSync(outputFilePath));
-	logBox.write(`Tetris complete.  Score: ${score}`);
+	terminal.write(`Tetris complete.  Score: ${score}`);
 	return score;
 };
 
