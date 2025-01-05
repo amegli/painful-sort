@@ -12,31 +12,42 @@ program
 
 const options = program.opts();
 const inputArray = JSON.parse(options.input);
+DockerLib.cleanOutputDir();
 
 const docker = new Docker();
 
-DockerLib.build(docker).then(() => {
-	const screen = blessed.screen({
-		smartCSR: true,
-		title: "Containers",
-	});
-
-	const itemsWithScores = inputArray.reduce((output, value) => {
-		output.push({ value: value, score: 0 });
-		return output;
-	}, []);
-
-	const outputPromises = itemsWithScores.map((itemWithScore, index) => {
-		return DockerLib.run(docker, screen, index).then((score) => {
-			itemWithScore.score = score;
+DockerLib.build(docker)
+	.then(() => {
+		const screen = blessed.screen({
+			smartCSR: true,
+			title: "Containers",
 		});
-	});
 
-	Promise.all(outputPromises).finally(() => {
-		DockerLib.cleanOutputDir();
-		screen.destroy();
-		console.clear();
-		itemsWithScores.sort((a, b) => b.score - a.score);
-		console.log(itemsWithScores.map((item) => item.value));
+		const itemsWithScores = inputArray.reduce((output, value) => {
+			output.push({ value: value, score: 0 });
+			return output;
+		}, []);
+
+		const outputPromises = itemsWithScores.map((itemWithScore, index) => {
+			return DockerLib.run(docker, screen, index).then((score) => {
+				itemWithScore.score = score;
+			});
+		});
+
+		Promise.all(outputPromises).finally(() => {
+			DockerLib.cleanOutputDir();
+			screen.destroy();
+			console.clear();
+			itemsWithScores.sort((a, b) => b.score - a.score);
+			console.log(itemsWithScores.map((item) => item.value));
+		});
+	})
+	.catch((e) => {
+		const message = e.address?.includes("docker.sock")
+			? "*Make sure docker is running*"
+			: "";
+		console.log(`
+Exception: ${e}
+${message}
+		`);
 	});
-});
